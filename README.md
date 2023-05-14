@@ -3,10 +3,17 @@
 [![Build](https://github.com/JuniorDark/RustyHearts-MIPTool/actions/workflows/build.yml/badge.svg)](https://github.com/JuniorDark/RustyHearts-MIPTool/actions/workflows/build.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/JuniorDark/RustyHearts-MIPTool)](https://github.com/JuniorDark/RustyHearts-MIPTool/releases/latest) <a href="https://github.com/JuniorDark/RustyHearts-MIPTool/releases">
 
-A c# command-line tool for compressing and decompressing Rusty Hearts .MIP files.
+A c# command-line tool for creating and decompressing Rusty Hearts .MIP files.
 
+## Getting Started
+To get started with this tool, simply download the latest [release](https://github.com/JuniorDark/RustyHearts-MIPTool/releases/latest) from the GitHub repository. 
+
+## Compression Formats
+The Rusty Hearts MIP Tool supports two compression formats:
+- **Deflate**: Main format. Used by the [Rusty Hearts Launcher](https://github.com/JuniorDark/RustyHearts-Launcher)
+- **Zlib**: Legacy support. The original Rusty Hearts MIP compression format. May have issues with some files. Work with the official MPatcher. Dont work with [Rusty Hearts Launcher](https://github.com/JuniorDark/RustyHearts-Launcher)    
+   
 ## Usage
-
 1. Ensure that the input files to be compressed/decompressed are located in the "Input" folder within the program directory.
 2. Run the program.
 3. Choose one of the following options:
@@ -15,19 +22,17 @@ A c# command-line tool for compressing and decompressing Rusty Hearts .MIP files
    - **3. Exit**: Quit the program.
 4. The resulting compressed/decompressed files will be located in the "Output" folder within the program directory.
 
-### Client patch
-
+## Creating client patch
 You can place the MIP files in the `patch` directory of the [Rusty Hearts API](https://github.com/JuniorDark/RustyHearts-API) to patch the client using the [Rusty Hearts Launcher](https://github.com/JuniorDark/RustyHearts-Launcher).
 
-## Compression Formats
-
-The Rusty Hearts MIP Tool supports two compression formats:
-
-- **Deflate**: Main format. Used by the [Rusty Hearts Launcher](https://github.com/JuniorDark/RustyHearts-Launcher)
-- **Zlib**: Legacy support. The original Rusty Hearts MIP compression format. May have issues with some files. Work with the official MPatcher. Dont work with [Rusty Hearts Launcher](https://github.com/JuniorDark/RustyHearts-Launcher)
+### Setup
+1. Unpack all client files using [RustyHearts-PCKTool](https://github.com/JuniorDark/RustyHearts-PCKTool)
+2. Place the files in the "Input" folder within the program directory.
+3. Compress to MIP: Select the Deflate compression format.
+4. Place the MIP files including the `filelist.txt` in the `patch` directory of the [Rusty Hearts API](https://github.com/JuniorDark/RustyHearts-API)
 
 ## Prerequisites for Building Locally/Development
-The tool is built in .NET 7 and as such, the packages listed below are required to create a local and development build of the launcher. Furthermore, it uses many submodules and packages outside of this, which will automatically be loaded when the user sets up a local environment of the application.
+The tool is built in .NET 7 and as such, the packages listed below are required to create a local and development build of the tool. Furthermore, it uses many submodules and packages outside of this, which will automatically be loaded when the user sets up a local environment of the application.
 * Visual Studio 2022 (Any Edition - 17.4 or later)
 * Windows 10 SDK (10.0.19043.0) or Windows 11 SDK (10.0.22000.0) via Visual Studio Installer
 * .NET: [.NET Core 7 SDK (7.0.100 or later)](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
@@ -38,6 +43,7 @@ The tool is built in .NET 7 and as such, the packages listed below are required 
 
 ## Preview
 ![image](preview.png)
+   
 ![image](size.png)
 
 ## License
