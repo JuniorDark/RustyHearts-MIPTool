@@ -1,5 +1,5 @@
 # Rusty Hearts MIP Tool
-[![License](https://img.shields.io/github/license/JuniorDark/RustyHearts-MIPTool?color=brown)](LICENSE)
+[![License](https://img.shields.io/github/license/JuniorDark/RustyHearts-MIPTool?color=green)](LICENSE)
 [![Build](https://github.com/JuniorDark/RustyHearts-MIPTool/actions/workflows/build.yml/badge.svg)](https://github.com/JuniorDark/RustyHearts-MIPTool/actions/workflows/build.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/JuniorDark/RustyHearts-MIPTool)](https://github.com/JuniorDark/RustyHearts-MIPTool/releases/latest) <a href="https://github.com/JuniorDark/RustyHearts-MIPTool/releases">
 
