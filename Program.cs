@@ -1,114 +1,98 @@
-﻿/*
+﻿using static RHMIPTool.Data.MIPCoder;
+using static RHMIPTool.Data.ZipHelper;
+/*
 Rusty Hearts MIP Tool - Implementation in C#
 Author: JuniorDark
 GitHub Repository: https://github.com/JuniorDark/RustyHearts-MIPTool
-This tool requires further development to improve functionality and ensure stability. 
-Please check the GitHub repository for updates.
 */
-
 namespace RHMIPTool
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private const string InputFolderPath = "Input";
+        private const string EmptyInputMessage = "The 'Input' folder is empty. There is nothing to do.";
+        private const string PressKeyToExitMessage = "Press any key to exit...";
+        private const string InvalidChoiceMessage = "Invalid choice.";
+
+        private static async Task Main()
         {
-            string InputPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Input");
+            Console.WriteLine("Rusty Hearts MIP Tool Version 2.0 by JuniorDark\n");
 
-            if (!Directory.Exists(InputPath))
+            try
             {
-                Directory.CreateDirectory(InputPath);
-            }
+                string inputPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, InputFolderPath);
+                EnsureInputDirectoryExists(inputPath);
 
-            if (Directory.GetFiles(InputPath, "*", SearchOption.AllDirectories).Length == 0)
-            {
-                Console.WriteLine("Rusty Hearts MIP Tool by JuniorDark\n");
-                Console.WriteLine("The 'Input' folder is empty. There is nothing to do.");
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey();
-                return;
-            }
-
-            Console.WriteLine("Rusty Hearts MIP Tool by JuniorDark\n");
-
-            string? choice;
-            while (true)
-            {
-                Console.WriteLine("Choose an option:");
-                Console.WriteLine("1. Compress to MIP");
-                Console.WriteLine("2. Decompress MIP");
-                Console.WriteLine("3. Exit");
-
-                choice = Console.ReadLine();
-
-                if (choice == "1")
+                if (IsInputDirectoryEmpty(inputPath))
                 {
-                    Console.WriteLine("\nSelect a compression format:");
-                    Console.WriteLine("1. Deflate");
-                    Console.WriteLine("2. Zlib (Original MIP compression format. May have issues with some files.)");
-                    string? compressionTypeChoice = Console.ReadLine();
-
-                    if (compressionTypeChoice == "1")
-                    {
-                        await MIPCoder.CompressToMipAsync(InputPath, CompressionType.Deflate);
-                        
-                    }
-                    else if (compressionTypeChoice == "2")
-                    {
-                        await MIPCoder.CompressToMipAsync(InputPath, CompressionType.Zlib);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid choice.");
-                        continue;
-                    }
-
-                    break;
-                }
-                else if (choice == "2")
-                {
-                    Console.WriteLine("\nSelect the decompression format:");
-                    Console.WriteLine("1. Deflate");
-                    Console.WriteLine("2. Zlib (Original MIP compression format. May have issues with some files.)");
-                    string? decompressionTypeChoice = Console.ReadLine();
-
-                    if (decompressionTypeChoice == "1")
-                    {
-                        await MIPDecoder.DecompressMipAsync(InputPath, CompressionType.Deflate);
-
-                    }
-                    else if (decompressionTypeChoice == "2")
-                    {
-                        await MIPDecoder.DecompressMipAsync(InputPath, CompressionType.Zlib);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid choice.");
-                        continue;
-                    }
-
-                    break;
-                }
-                else if (choice == "3")
-                {
+                    Console.WriteLine(EmptyInputMessage);
+                    WaitForKeyPress();
                     return;
                 }
-                else
-                {
-                    Console.WriteLine("Invalid choice.");
-                    continue;
-                }
-            }
 
-            Console.WriteLine("Done!");
-            Console.WriteLine("Press any key to exit...");
+                while (true)
+                {
+                    Console.WriteLine("Choose an option:");
+                    Console.WriteLine("1. Compress to MIP - Compress files to MIP format");
+                    Console.WriteLine("2. Decompress MIP - Decompress MIP files");
+                    Console.WriteLine("3. Compress files - Compress files to ZIP format, can be used for creating client download files");
+                    Console.WriteLine("4. Generate filelist - Generate a filelist of files in the 'Input' folder with name, size and hash");
+                    Console.WriteLine("5. Exit");
+
+                    string? choice = Console.ReadLine();
+
+                    switch (choice)
+                    {
+                        case "1":
+                            await CompressToMipAsync(inputPath, MIPCompressionMode.Compress);
+                            break;
+                        case "2":
+                            await CompressToMipAsync(inputPath, MIPCompressionMode.Decompress);
+                            break;
+                        case "3":
+                            await CompressToZipPartsAsync(inputPath);
+                            break;
+                        case "4":
+                            await CreateFileListAsync(inputPath);
+                            break;
+                        case "5":
+                            return;
+                        default:
+                            Console.WriteLine(InvalidChoiceMessage);
+                            continue;
+                    }
+
+                    break;
+                }
+
+                Console.WriteLine("Done!\n\n" + PressKeyToExitMessage);
+                WaitForKeyPress();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                WaitForKeyPress();
+            }
+        }
+
+        private static void EnsureInputDirectoryExists(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        private static bool IsInputDirectoryEmpty(string path)
+        {
+            return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length == 0;
+        }
+
+        private static void WaitForKeyPress()
+        {
+            Console.WriteLine(PressKeyToExitMessage);
             Console.ReadKey();
         }
-
-        public enum CompressionType
-        {
-            Zlib,
-            Deflate
-        }
-
     }
+
 }

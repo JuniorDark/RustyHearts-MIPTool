@@ -1,6 +1,4 @@
-﻿using Force.Crc32;
-
-namespace RHMIPTool
+﻿namespace RHMIPTool.Data
 {
     internal class MIP
     {
@@ -21,7 +19,7 @@ namespace RHMIPTool
         0xe0, 0x12, 0x2f, 0xcd, 0xa2, 0xde, 0x52, 0xce, 0xec, 0xef, 0x77, 14, 0xbc, 0x38, 100, 0x8d,
         180, 0xdb, 0x67, 0xff, 200, 0x66, 12, 0x8a, 0x60, 0xe1, 0x2e, 0, 0x43, 0xa9, 0x37, 0x9c,
         0x11, 170, 0xb9, 0x98, 0xed, 0x21, 0x35, 0xd4, 0xc3, 0xde, 0x65, 0x54, 0x9d, 0x1c, 0xb0, 0xa9
-     };
+        };
 
         public static void BytesWithCodeMip(byte[] toBytes)
         {
@@ -29,15 +27,6 @@ namespace RHMIPTool
             {
                 toBytes[i] = (byte)(toBytes[i] ^ codeMip[i & 0xff]);
             }
-        }
-
-        public static string GetFileHash(string filePath)
-        {
-            using FileStream stream = File.OpenRead(filePath);
-            Crc32Algorithm crc32 = new();
-            byte[] hashBytes = crc32.ComputeHash(stream);
-            string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            return hashString;
         }
 
     }
