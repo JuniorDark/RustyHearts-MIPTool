@@ -16,7 +16,8 @@ namespace RHMIPTool
 
         private static async Task Main()
         {
-            Console.WriteLine("Rusty Hearts MIP Tool Version 2.0 by JuniorDark\n");
+            Console.WriteLine("Rusty Hearts MIP Tool by JuniorDark\n");
+            Console.WriteLine("Version: 2.0\n");
 
             try
             {
