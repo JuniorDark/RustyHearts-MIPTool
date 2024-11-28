@@ -1,4 +1,4 @@
-﻿using Ionic.Zlib;
+﻿using System.IO.Compression;
 
 namespace RHMIPTool.Data
 {
@@ -71,7 +71,7 @@ namespace RHMIPTool.Data
             Console.WriteLine("Processing...");
 
             // Get list of new files to convert
-            List<string> newFiles = new();
+            List<string> newFiles = [];
             foreach (string file in files)
             {
                 string relativePath = Path.GetRelativePath(folderPath, file);
@@ -198,7 +198,7 @@ namespace RHMIPTool.Data
             }
 
             // Remove deleted files from file database and output folder
-            List<string> deletedFiles = new();
+            List<string> deletedFiles = [];
             foreach (KeyValuePair<string, Tuple<long, string>> entry in fileDatabase)
             {
                 string filePath = Path.Combine(folderPath, entry.Key);
@@ -228,7 +228,7 @@ namespace RHMIPTool.Data
             }
 
             // Save file database
-            List<string> fileDatabaseLinesFinal = new();
+            List<string> fileDatabaseLinesFinal = [];
             foreach (KeyValuePair<string, Tuple<long, string>> entry in fileDatabase)
             {
                 fileDatabaseLinesFinal.Add($"{entry.Key} {entry.Value.Item1} {entry.Value.Item2}");
@@ -270,7 +270,7 @@ namespace RHMIPTool.Data
         public static byte[] CompressBytesZlib(byte[] toBytes)
         {
             using MemoryStream outputStream = new();
-            using (ZlibStream deflateStream = new(outputStream, CompressionMode.Compress))
+            using (ZLibStream deflateStream = new(outputStream, CompressionMode.Compress))
             {
                 deflateStream.Write(toBytes, 0, toBytes.Length);
             }
@@ -289,7 +289,7 @@ namespace RHMIPTool.Data
         private static byte[] DecompressBytesZlib(byte[] toBytes)
         {
             using MemoryStream inputStream = new(toBytes);
-            using ZlibStream inflateStream = new(inputStream, CompressionMode.Decompress);
+            using ZLibStream inflateStream = new(inputStream, CompressionMode.Decompress);
             using MemoryStream outputStream = new();
             inflateStream.CopyTo(outputStream);
             return outputStream.ToArray();
@@ -305,14 +305,12 @@ namespace RHMIPTool.Data
             string fileDatabasePath = Path.Combine(folderPath, "filelist.txt");
 
             // Retrieve all files in the specified folder
-            List<string> files = Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
-                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            List<string> files = [.. Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories).OrderBy(f => f, StringComparer.OrdinalIgnoreCase)];
 
             Console.WriteLine("Creating filelist...");
 
             // Create file database
-            List<string> fileDatabaseLines = new();
+            List<string> fileDatabaseLines = [];
 
             foreach (string file in files)
             {

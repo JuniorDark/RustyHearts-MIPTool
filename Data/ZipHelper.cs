@@ -1,4 +1,4 @@
-﻿using Ionic.Zip;
+﻿using System.IO.Compression;
 using static RHMIPTool.Data.MIPCoder;
 
 namespace RHMIPTool.Data
@@ -19,38 +19,71 @@ namespace RHMIPTool.Data
                 Directory.CreateDirectory(outputRootFolder);
             }
 
-            string zipFilePath = Path.Combine(outputRootFolder, "gameclient.zip");
-            List<string> files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories).ToList();
+            List<string> files = [.. Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories)];
 
             long totalBytes = files.Sum(file => new FileInfo(file).Length);
-            Dictionary<string, long> fileProgress = files.ToDictionary(file => file, file => 0L);
             long totalBytesProcessed = 0;
 
-            using (ZipFile zip = new())
-            {
-                zip.MaxOutputSegmentSize = 256 * 1024 * 1024; // 256 MB
-                zip.UseZip64WhenSaving = Zip64Option.AsNecessary;
+            long maxPartSize = 256 * 1024 * 1024; // 256 MB
+            long currentPartSize = 0;
+            int partNumber = 1;
+            string zipFilePath = Path.Combine(outputRootFolder, $"gameclient_part{partNumber}.zip");
 
-                zip.AddDirectory(folderPath, "");
-                zip.SaveProgress += (sender, e) =>
+            FileStream zipFileStream = new(zipFilePath, FileMode.Create, FileAccess.Write);
+            ZipArchive zip = new(zipFileStream, ZipArchiveMode.Create);
+
+            try
+            {
+                foreach (var file in files)
                 {
-                    if (e.EventType == ZipProgressEventType.Saving_EntryBytesRead)
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (currentPartSize >= maxPartSize)
                     {
-                        fileProgress[e.CurrentEntry.FileName] = e.BytesTransferred;
-                        totalBytesProcessed = fileProgress.Values.Sum();
+                        zip.Dispose();
+                        zipFileStream.Dispose();
+
+                        partNumber++;
+                        zipFilePath = Path.Combine(outputRootFolder, $"gameclient_part{partNumber}.zip");
+
+                        // Open a new zip file and start writing
+                        zipFileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write);
+                        zip = new ZipArchive(zipFileStream, ZipArchiveMode.Create);
+
+                        currentPartSize = 0;
+                    }
+
+                    // Create entry for each file in the archive
+                    string entryName = Path.GetRelativePath(folderPath, file);
+                    ZipArchiveEntry entry = zip.CreateEntry(entryName, CompressionLevel.Optimal);
+
+                    // Copy file data into the entry
+                    using FileStream fs = new(file, FileMode.Open, FileAccess.Read);
+                    using Stream entryStream = entry.Open();
+                    long fileLength = fs.Length;
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = await fs.ReadAsync(buffer, cancellationToken)) > 0)
+                    {
+                        await entryStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                        totalBytesProcessed += bytesRead;
+                        currentPartSize += bytesRead;
+
+                        // Report progress
                         double progressPercentage = (double)totalBytesProcessed / totalBytes * 100;
                         progressPercentage = progressPercentage > 100 ? 100 : progressPercentage;
                         Console.Write($"\rProgress: {progressPercentage:F2}% complete");
                     }
-                };
-
-                Console.WriteLine("Compressing files...");
-                await Task.Run(() => zip.Save(zipFilePath), cancellationToken);
+                }
+            }
+            finally
+            {
+                zip?.Dispose();
+                zipFileStream?.Dispose();
             }
 
             Console.WriteLine("\nCompression complete.");
             await CreateFileListAsync(outputRootFolder, cancellationToken);
         }
-
     }
 }

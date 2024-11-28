@@ -17,7 +17,7 @@ namespace RHMIPTool
         private static async Task Main()
         {
             Console.WriteLine("Rusty Hearts MIP Tool by JuniorDark\n");
-            Console.WriteLine("Version: 2.0\n");
+            Console.WriteLine("Version: 2.1\n");
 
             try
             {
@@ -66,7 +66,7 @@ namespace RHMIPTool
                     break;
                 }
 
-                Console.WriteLine("Done!\n\n" + PressKeyToExitMessage);
+                Console.WriteLine("Done!");
                 WaitForKeyPress();
             }
             catch (Exception ex)
