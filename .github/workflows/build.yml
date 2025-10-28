@@ -23,7 +23,7 @@ jobs:
       - name: Zip output files (No Self-Contained)
         run: Compress-Archive -Path "./publish/RustyHearts-MIPTool_framework-dependent" -DestinationPath RustyHearts-MIPTool.zip
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: RustyHearts-MIPTool
           path: RustyHearts-MIPTool.zip
